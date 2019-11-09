@@ -1,5 +1,6 @@
 cmake_minimum_required (VERSION 3.5)
 project (CPP_tutorials)
+add_compile_options(-std=c++11)
 
 add_subdirectory(01_HelloWorld)
 add_subdirectory(02_ForLoop)
@@ -9,3 +10,4 @@ add_subdirectory(05_ShipBattle)
 add_subdirectory(06_ClassPoint)
 add_subdirectory(07_MultiFiles)
 add_subdirectory(08_Inheritance)
+add_subdirectory(09_DynamicMemory)
