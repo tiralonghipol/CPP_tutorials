@@ -7,9 +7,9 @@ target_link_libraries(cat)
 add_library(dog src/dog.cpp)
 target_link_libraries(dog)
 
-add_executable(main src/main.cpp)
+add_executable(main_07 src/main_07.cpp)
 target_link_libraries(
-    main 
+    main_07 
     cat
     dog
 )
