@@ -1,3 +1,5 @@
-# CPP_tutorials
+<!-- ![C++ Tutorials Logo](https://octodex.github.com/images/yaktocat.png) -->
 
-Collection of C++ tutorials, focus con CMake and dynamic programming
+Personal collection of C++ tutorials by examples
+
+
