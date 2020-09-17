@@ -6,6 +6,8 @@
 
 using namespace std;
 namespace sc = boost::statechart;
+namespace mpl = boost::mpl;
+
 // events
 struct wp_received : sc::event<wp_received>
 {
@@ -13,13 +15,15 @@ struct wp_received : sc::event<wp_received>
 struct wp_reached : sc::event<wp_reached>
 {
 };
-struct wait : sc::event<wait>
+struct collision : sc::event<collision>
+{
+};
+struct end_mission : sc::event<end_mission>
 {
 };
 // states
 struct takeoff_state;
 struct hover_state;
-struct wait_state;
 struct land_state;
 
 struct mission_phase_SM : sc::state_machine<mission_phase_SM, land_state>
@@ -49,18 +53,40 @@ struct hover_state : sc ::simple_state<hover_state, mission_phase_SM>
   hover_state()
   {
     cout << "HOVER state" << endl;
-    typedef sc::transition<wait, land_state> reactions;
   }
+  typedef mpl::list<
+      sc::transition<wp_received, hover_state>,
+      sc::transition<collision, land_state>,
+      sc::transition<end_mission, land_state>>
+      reactions;
 };
 
 int main()
 {
+
   mission_phase_SM missionPhaseSM;
 
   missionPhaseSM.initiate();
-  missionPhaseSM.process_event(wp_received());
-  missionPhaseSM.process_event(wp_reached());
-  missionPhaseSM.process_event(wait());
+  int fake_wp;
+
+  cout << "Enter fake waypoint : ";
+  cin >> fake_wp;
+
+  while (fake_wp != 0)
+  {
+    if (fake_wp == -1)
+    {
+      missionPhaseSM.process_event(collision());
+      break;
+    }
+
+    missionPhaseSM.process_event(wp_received());
+    missionPhaseSM.process_event(wp_reached());
+    cout << "Enter fake waypoint : ";
+    cin >> fake_wp;
+  }
+
+  missionPhaseSM.process_event(end_mission());
 
   // cout << "ciaone  " << endl;
 
