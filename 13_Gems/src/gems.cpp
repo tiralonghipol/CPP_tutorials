@@ -1,9 +1,38 @@
 #include <iostream>
 #include <stdlib.h>
 #include <vector>
+#include <string>
 #include <iterator>
 #include <algorithm>
 #include <cctype>
+#include <random>
+#include <chrono>
+
+class Timer
+{
+public:
+    Timer()
+    {
+        m_start_time_point = std::chrono::high_resolution_clock::now();
+    }
+    void stop()
+    {
+        auto end_time_point = std::chrono::high_resolution_clock::now();
+        auto start = std::chrono::time_point_cast<std::chrono::microseconds>(m_start_time_point).time_since_epoch().count();
+        auto end = std::chrono::time_point_cast<std::chrono::microseconds>(end_time_point).time_since_epoch().count();
+        auto duration = end - start;
+        double ms = duration * 0.001;
+
+        std::cout << duration << " us | " << ms << " ms " << std::endl;
+    }
+    ~Timer()
+    {
+        stop();
+    };
+
+private:
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_start_time_point;
+};
 
 template <class Container>
 void write_to_cout(const Container &container, const char *delimiter = " ")
@@ -19,8 +48,18 @@ void print_menu()
     std::cout << "3) copy_backward" << std::endl;
     std::cout << "4) copy_if" << std::endl;
     std::cout << "5) move" << std::endl;
+    std::cout << "6) remove" << std::endl;
+    std::cout << "7) transform" << std::endl;
+    std::cout << "8) generate_n" << std::endl;
+    std::cout << "9) lamda" << std::endl;
+    std::cout << "10) sort/search/timing" << std::endl;
     std::cout << "Select: ";
 }
+
+void my_toupper()
+{
+}
+
 int main()
 {
     // containers
@@ -33,6 +72,10 @@ int main()
                                   "6", "7", "8",
                                   "9", "10"};
     std::vector<int> c = {25, 15, 5, -5, -15};
+    std::vector<int> rands_v;
+    // shuffle random generator
+    std::mt19937 rng(std::random_device{}());
+    std::uniform_int_distribution<int> d(-1e3, 1e3);
 
     int menu_choice;
     // print original vectors
@@ -58,6 +101,7 @@ int main()
         std::cout << "New b vector: " << std::endl;
         write_to_cout(b);
         std::cout << std::endl;
+
         break;
     }
     case 2:
@@ -67,6 +111,7 @@ int main()
         std::cout << "New b vector: " << std::endl;
         write_to_cout(b);
         std::cout << std::endl;
+
         break;
     }
     case 3:
@@ -76,6 +121,7 @@ int main()
         std::cout << "New b vector: " << std::endl;
         write_to_cout(b);
         std::cout << std::endl;
+
         break;
     }
     case 4:
@@ -86,17 +132,89 @@ int main()
         std::cout << "New b vector: " << std::endl;
         write_to_cout(positives);
         std::cout << std::endl;
+
         break;
     }
     case 5:
     {
-        // copy in reverse order
+        // move form one vector to the other
         std::move(a.begin() + 3, a.begin() + 7, b.begin() + 6);
         std::cout << "a vector: " << std::endl;
         write_to_cout(a, " | ");
         std::cout << std::endl;
         std::cout << "New b vector: " << std::endl;
         write_to_cout(b);
+        std::cout << std::endl;
+
+        break;
+    }
+    case 6:
+    {
+        // remove all items not containing an 'e'
+        const auto new_end = std::remove_if(
+            a.begin(),
+            a.end(),
+            [](const std::string &s) {
+                return std::count(s.begin(), s.end(), 'e') == 0;
+            });
+        a.erase(new_end, a.end());
+
+        std::cout << "New a vector: " << std::endl;
+        write_to_cout(a);
+        std::cout << std::endl;
+
+        break;
+    }
+    case 7:
+    {
+        // transform all input to upper case
+        for (int id = 0; id < a.size(); id++)
+        {
+            std::transform(a.at(id).begin(), a.at(id).end(), a.at(id).begin(), ::toupper);
+        }
+        std::cout << "New a vector: " << std::endl;
+        write_to_cout(a);
+        std::cout << std::endl;
+
+        break;
+    }
+    case 8:
+    {
+        // generate n radonm values
+        // std::generate_n(std::back_inserter(rands_v), 5, rng);
+        std::generate_n(std::back_inserter(rands_v), 6, [&]() { return d(rng); });
+        write_to_cout(rands_v);
+        std::cout << std::endl;
+
+        break;
+    }
+    case 9:
+    {
+        // test a lamda function
+        int a = 3, b = 2;
+        auto add_ints = [&a, &b]() {
+            a -= 1;
+            return a + b;
+        };
+        std::cout << add_ints() << std::endl;
+
+        break;
+    }
+    case 10:
+    {
+        // generate n radonm values
+        // std::generate_n(std::back_inserter(rands_v), 5, rng);
+        std::cout << "t1: ";
+        {
+            Timer t1;
+            std::generate_n(std::back_inserter(rands_v), 1e6, [&]() { return d(rng); });
+        }
+        std::cout << "t2: ";
+        {
+            Timer t2;
+            std::sort(rands_v.begin(), rands_v.end());
+        }
+        
         std::cout << std::endl;
         break;
     }
