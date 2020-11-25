@@ -7,6 +7,8 @@
 #include <cctype>
 #include <random>
 #include <chrono>
+#include <stack>
+#include <queue>
 
 class Timer
 {
@@ -53,12 +55,21 @@ void print_menu()
     std::cout << "8) generate_n" << std::endl;
     std::cout << "9) lamda" << std::endl;
     std::cout << "10) sort/search/timing" << std::endl;
+    std::cout << "11) heap" << std::endl;
+    std::cout << "12) stack" << std::endl;
+    std::cout << "13) priority_queue" << std::endl;
     std::cout << "Select: ";
 }
 
-void my_toupper()
+struct Action
 {
-}
+    int time_stamp;
+    std::string description;
+    bool operator>(const Action &rhs) const
+    {
+        return time_stamp > rhs.time_stamp;
+    }
+};
 
 int main()
 {
@@ -73,9 +84,11 @@ int main()
                                   "9", "10"};
     std::vector<int> c = {25, 15, 5, -5, -15};
     std::vector<int> rands_v;
+    std::stack<int> stack_of_ints;
+    std::priority_queue<Action, std::vector<Action>, std::greater<Action>> pq;
     // shuffle random generator
     std::mt19937 rng(std::random_device{}());
-    std::uniform_int_distribution<int> d(-1e3, 1e3);
+    std::uniform_int_distribution<int> d(-10, 10);
 
     int menu_choice;
     // print original vectors
@@ -202,20 +215,62 @@ int main()
     }
     case 10:
     {
-        // generate n radonm values
+        // generate n radonm values and time the operation
         // std::generate_n(std::back_inserter(rands_v), 5, rng);
         std::cout << "t1: ";
         {
             Timer t1;
             std::generate_n(std::back_inserter(rands_v), 1e6, [&]() { return d(rng); });
         }
+        // sort the vector and time the operation
         std::cout << "t2: ";
         {
             Timer t2;
             std::sort(rands_v.begin(), rands_v.end());
         }
-        
+
         std::cout << std::endl;
+        break;
+    }
+    case 11:
+    {
+        // generate 100 radonm values
+        std::generate_n(std::back_inserter(rands_v), 10, [&]() { return d(rng); });
+        write_to_cout(rands_v);
+        std::cout << std::endl;
+        {
+            Timer t1;
+            // max heap
+            // std::make_heap(rands_v.begin(), rands_v.end());
+            // min heap
+            std::make_heap(rands_v.begin(), rands_v.end(), std::greater<int>{});
+        }
+        write_to_cout(rands_v);
+        std::cout << std::endl;
+        break;
+    }
+    case 12:
+    {
+        // push a value into the empty stack
+        stack_of_ints.push(10);
+        std::cout << stack_of_ints.top() << std::endl;
+        break;
+    }
+    case 13:
+    {
+        // push some timestamps/action into the priority queue
+        pq.push({20, "Eat"});
+        pq.push({10, "Sleep"});
+        pq.push({40, "Work"});
+        pq.push({-10, "Study"});
+
+        while (!pq.empty())
+        {
+            const auto &a = pq.top();
+            std::cout << "Time: " << a.time_stamp << " - executing: " << a.description << std::endl;
+            pq.pop();
+        }
+
         break;
     }
     default:
