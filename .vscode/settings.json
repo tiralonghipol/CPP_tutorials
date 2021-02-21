@@ -60,5 +60,9 @@
         "random": "cpp",
         "set": "cpp",
         "string": "cpp"
-    }
+    },
+    "python.autoComplete.extraPaths": [
+        "/home/pol/Repos/rmf_sim_ws/devel/lib/python2.7/dist-packages",
+        "/opt/ros/melodic/lib/python2.7/dist-packages"
+    ]
 }
